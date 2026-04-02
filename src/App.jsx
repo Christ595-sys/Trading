@@ -22,15 +22,13 @@ export default function App() {
   );
   const [probability, setProbability] = useState(null);
   const [showJournal, setShowJournal] = useState(false);
-  const [tradeForm, setTradeForm] = useState(initialForm);
-  const [trades, setTrades] = useState([]);
 
-  useEffect(() => {
+  const [tradeForm, setTradeForm] = useState(initialForm);
+
+  const [trades, setTrades] = useState(() => {
     const savedTrades = localStorage.getItem("tradeJournal");
-    if (savedTrades) {
-      setTrades(JSON.parse(savedTrades));
-    }
-  }, []);
+    return savedTrades ? JSON.parse(savedTrades) : [];
+  });
 
   useEffect(() => {
     localStorage.setItem("tradeJournal", JSON.stringify(trades));
@@ -80,6 +78,10 @@ export default function App() {
 
     setTrades((prev) => [newTrade, ...prev]);
     setTradeForm(initialForm);
+  };
+
+  const deleteTrade = (id) => {
+    setTrades((prev) => prev.filter((trade) => trade.id !== id));
   };
 
   return (
@@ -191,18 +193,17 @@ export default function App() {
                 trades.map((trade) => (
                   <div className="trade-card" key={trade.id}>
                     <h3>{trade.pair}</h3>
-                    <p>
-                      <strong>Type:</strong> {trade.type}
-                    </p>
-                    <p>
-                      <strong>Lot Size:</strong> {trade.lotSize}
-                    </p>
-                    <p>
-                      <strong>Date:</strong> {trade.date}
-                    </p>
-                    <p>
-                      <strong>Balance:</strong> ${trade.balance}
-                    </p>
+                    <p><strong>Type:</strong> {trade.type}</p>
+                    <p><strong>Lot Size:</strong> {trade.lotSize}</p>
+                    <p><strong>Date:</strong> {trade.date}</p>
+                    <p><strong>Balance:</strong> ${trade.balance}</p>
+
+                    <button
+                      className="delete-btn"
+                      onClick={() => deleteTrade(trade.id)}
+                    >
+                      Delete
+                    </button>
                   </div>
                 ))
               )}
